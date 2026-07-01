@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BusinessOS v1.3</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ── Sidebar ──────────────────────────────────────────── -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">B</div>
+      <div>
+        <div class="sidebar-brand">BusinessOS</div>
+        <div class="sidebar-company" id="sidebarCompany">—</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+      <!-- Dynamically generated -->
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-toggle" id="sidebarToggle" title="Recolher sidebar">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────── -->
+  <div class="main-content" id="mainContent">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="topbar-breadcrumb">
+          <span id="topbarModule">Dashboard</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm btn-icon" id="logoutBtn" title="Sair">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="topbar-user">
+          <span class="topbar-user-name" id="topbarUserName">—</span>
+          <span class="topbar-user-role">Administrador</span>
+        </div>
+        <div class="topbar-avatar" id="topbarAvatar">?</div>
+      </div>
+    </header>
+
+    <!-- Page content (swapped by JS) -->
+    <main class="page-body" id="pageContent"></main>
+  </div>
+</div>
+
+<!-- ── Modals ────────────────────────────────────────────── -->
+
+<!-- Add Product -->
+<div class="modal-overlay" id="modalProduct">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="productModalTitle">Novo Produto</h3>
+      <button class="modal-close" data-close="modalProduct">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="productId"/>
+    <div class="form-group">
+      <label>Nome do produto *</label>
+      <input type="text" id="productName" class="input" placeholder="Ex: Filtro de óleo Bosch"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoria</label>
+        <input type="text" id="productCategory" class="input" placeholder="Ex: Filtros"/>
+      </div>
+      <div class="form-group">
+        <label>Preço (R$) *</label>
+        <input type="number" id="productPrice" class="input" placeholder="0,00" min="0" step="0.01"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantidade em estoque *</label>
+        <input type="number" id="productQty" class="input" placeholder="0" min="0"/>
+      </div>
+      <div class="form-group">
+        <label>Estoque mínimo</label>
+        <input type="number" id="productMinStock" class="input" placeholder="5" min="0"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="modalProduct">Cancelar</button>
+      <button class="btn btn-primary" id="saveProductBtn">Salvar produto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer -->
+<div class="modal-overlay" id="modalCustomer">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Novo Cliente</h3>
+      <button class="modal-close" data-close="modalCustomer">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="form-group">
+      <label>Nome *</label>
+      <input type="text" id="customerName" class="input" placeholder="Nome completo"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Telefone</label>
+        <input type="tel" id="customerPhone" class="input" placeholder="(11) 99999-9999"/>
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="customerEmail" class="input" placeholder="email@exemplo.com"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="modalCustomer">Cancelar</button>
+      <button class="btn btn-primary" id="saveCustomerBtn">Salvar cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Sale -->
+<div class="modal-overlay" id="modalSale">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Nova Venda</h3>
+      <button class="modal-close" data-close="modalSale">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="form-group">
+      <label>Produto *</label>
+      <select id="saleProduct" class="input">
+        <option value="">Selecione um produto…</option>
+      </select>
+    </div>
+    <div id="saleProductInfo" style="display:none;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;margin-bottom:16px;font-size:0.8125rem;">
+      Preço: <strong id="salePriceDisplay">—</strong> · Estoque: <strong id="saleStockDisplay">—</strong>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantidade *</label>
+        <input type="number" id="saleQty" class="input" placeholder="1" min="1"/>
+      </div>
+      <div class="form-group">
+        <label>Forma de Pagamento</label>
+        <select id="salePayment" class="input">
+          <option value="dinheiro">Dinheiro</option>
+          <option value="pix">Pix</option>
+          <option value="cartao">Cartão</option>
+          <option value="fiado">Fiado</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Cliente (opcional)</label>
+      <select id="saleCustomer" class="input">
+        <option value="">Balcão (sem vínculo)</option>
+      </select>
+    </div>
+    <div id="saleTotalBox" style="display:none;padding:12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:6px;margin-bottom:4px;">
+      <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:2px;">Total da venda</div>
+      <div id="saleTotalDisplay" style="font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;color:var(--accent)">R$ 0,00</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="modalSale">Cancelar</button>
+      <button class="btn btn-primary" id="saveSaleBtn">Registrar venda</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Expense -->
+<div class="modal-overlay" id="modalExpense">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Nova Despesa</h3>
+      <button class="modal-close" data-close="modalExpense">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="form-group">
+      <label>Descrição *</label>
+      <input type="text" id="expenseDesc" class="input" placeholder="Ex: Aluguel, energia…"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Valor (R$) *</label>
+        <input type="number" id="expenseAmount" class="input" placeholder="0,00" min="0" step="0.01"/>
+      </div>
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="expenseCategory" class="input">
+          <option>Fixo</option>
+          <option>Variável</option>
+          <option>Utilidades</option>
+          <option>Estoque</option>
+          <option>Pessoal</option>
+          <option>Outro</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="modalExpense">Cancelar</button>
+      <button class="btn btn-primary" id="saveExpenseBtn">Salvar despesa</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── V1.2: Supplier Modal ──────────────────────────────── -->
+<div class="modal-overlay" id="modalSupplier">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="supplierModalTitle">Novo Fornecedor</h3>
+      <button class="modal-close" data-close="modalSupplier">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="supplierId"/>
+    <div class="form-group">
+      <label>Nome da empresa *</label>
+      <input type="text" id="supplierName" class="input" placeholder="Ex: Bosch do Brasil"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Contato</label>
+        <input type="text" id="supplierContact" class="input" placeholder="Nome do responsável"/>
+      </div>
+      <div class="form-group">
+        <label>Categoria</label>
+        <input type="text" id="supplierCategory" class="input" placeholder="Ex: Filtros, Motor…"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Telefone</label>
+        <input type="tel" id="supplierPhone" class="input" placeholder="(11) 99999-9999"/>
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="supplierEmail" class="input" placeholder="contato@empresa.com"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>CNPJ</label>
+      <input type="text" id="supplierCnpj" class="input" placeholder="00.000.000/0001-00"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="modalSupplier">Cancelar</button>
+      <button class="btn btn-primary" id="saveSupplierBtn">Salvar fornecedor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── V1.2: Purchase Modal ──────────────────────────────── -->
+<div class="modal-overlay" id="modalPurchase">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <h3 class="modal-title">Registrar Compra</h3>
+      <button class="modal-close" data-close="modalPurchase">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="form-group">
+      <label>Produto *</label>
+      <select id="purchaseProduct" class="input">
+        <option value="">Selecione o produto…</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Fornecedor</label>
+      <select id="purchaseSupplier" class="input">
+        <option value="">Fornecedor avulso</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quantidade *</label>
+        <input type="number" id="purchaseQty" class="input" placeholder="0" min="1"/>
+      </div>
+      <div class="form-group">
+        <label>Custo unitário (R$) *</label>
+        <input type="number" id="purchaseUnitCost" class="input" placeholder="0,00" min="0" step="0.01"/>
+      </div>
+    </div>
+    <div id="purchaseTotalBox" style="display:none;padding:12px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:var(--radius-sm);margin-bottom:4px;">
+      <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:2px">Total da compra (despesa)</div>
+      <div id="purchaseTotalCost" style="font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;color:var(--red)">R$ 0,00</div>
+    </div>
+    <div class="form-group" style="margin-top:8px;">
+      <label>Observações</label>
+      <input type="text" id="purchaseNotes" class="input" placeholder="Opcional…"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-close="modalPurchase">Cancelar</button>
+      <button class="btn btn-primary" id="savePurchaseBtn">Registrar compra</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Confirmação (substitui window.confirm — funciona em mobile) ── -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="confirmModalTitle">Confirmar ação</h3>
+    </div>
+    <p id="confirmModalMessage" style="font-size:0.875rem;color:var(--text-2);line-height:1.6;margin-bottom:4px;"></p>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="confirmModalCancel">Cancelar</button>
+      <button class="btn btn-danger" id="confirmModalOk">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/env-init.js"></script>
+<script type="module">
+import StorageService from './js/core/storage.js';
+import EventBus from './js/core/eventBus.js';
+import AppState from './js/core/appState.js';
+import AuthService from './js/services/auth.js';
+import NotificationService from './js/core/notifications.js';
+import ProductsModule from './js/modules/products.js';
+import SalesModule from './js/modules/sales.js';
+import CustomersModule from './js/modules/customers.js';
+import FinanceModule from './js/modules/finance.js';
+import SettingsModule from './js/modules/settings.js';
+import ExportService from './js/services/export.js';
+import DashboardService from './js/services/dashboardService.js';
+import StatisticsService from './js/services/statisticsService.js';
+import Logger from './js/services/logger.js';
+import OnboardingService from './js/services/onboardingService.js';
+import SettingsService from './js/services/settingsService.js';
+import Timeline from './js/components/timeline.js';
+// ── V1.2 ──
+import PurchasesModule from './js/modules/purchases.js';
+import InsightsEngine from './js/core/InsightsEngine.js';
+import DataCore from './js/core/DataCore.js';
+// ── V1.3 ──
+import AIService from './js/services/ai.js';
+
+// Hydrate global app state on every page load.
+AppState.hydrate();
+
+// Apply theme to document
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+}
+applyTheme(AppState.get('theme'));
+
+// Listen for theme changes
+EventBus.subscribe('APPSTATE_CHANGED', (data) => {
+  if (data.patch && data.patch.theme) {
+    applyTheme(data.patch.theme);
+  }
+});
+
+const { EVENTS } = EventBus;
+
+// ── Listener cleanup registry ────────────────────────────
+// Tracks active subscriptions so they can be torn down before re-subscribing
+const _unsubs = [];
+function _clearListeners() {
+  while (_unsubs.length) _unsubs.pop()();
+}
+function _sub(event, fn) {
+  _unsubs.push(EventBus.subscribe(event, fn));
+}
+
+// ── Auth guard ────────────────────────────────────────────
+const session = AuthService.requireAuth();
+if (!session) throw new Error('Not authenticated');
+
+document.getElementById('topbarUserName').textContent = session.name;
+document.getElementById('topbarAvatar').textContent = session.name[0].toUpperCase();
+document.getElementById('sidebarCompany').textContent = session.company || 'Minha Empresa';
+document.getElementById('logoutBtn').addEventListener('click', () => AuthService.logout());
+
+// ── Sidebar & routing ─────────────────────────────────────
+const ALL_MODULES = [
+  { id: 'dashboard', label: 'Dashboard', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>`, always: true },
+  { id: 'products', label: 'Produtos', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4l6-2 6 2v8l-6 2-6-2V4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 2v12M2 4l6 2 6-2" stroke="currentColor" stroke-width="1.5"/></svg>` },
+  { id: 'customers', label: 'Clientes', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M1 14c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 7c1.1 0 2 .9 2 2s-.9 2-2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M14 14c0-1.65-.67-3-2-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>` },
+  { id: 'sales', label: 'Vendas', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 1h2l2 8h8l2-6H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="13" r="1" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="13" r="1" stroke="currentColor" stroke-width="1.5"/></svg>` },
+  { id: 'purchases', label: 'Compras', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h2l1.5 7h7l1.5-5H5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10v4M6 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`, v12: true },
+  { id: 'finance', label: 'Financeiro', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M11 4H6.5a2.5 2.5 0 000 5h3a2.5 2.5 0 010 5H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>` },
+  { id: 'insights', label: 'Insights', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1a5 5 0 015 5c0 2-1.2 3.7-3 4.6V12H6v-1.4C4.2 9.7 3 8 3 6a5 5 0 015-5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`, v12: true },
+  { id: 'reports', label: 'Relatórios', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 12V8M7 12V5M11 12V9M15 12V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>` },
+  { id: 'ai', label: 'Assistente IA', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M5 8c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="8" r="1" fill="currentColor"/></svg>`, v13: true },
+  { id: 'settings', label: 'Configurações', icon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M15 8h-2M3 8H1M13 3l-1.4 1.4M4.4 11.6L3 13M13 13l-1.4-1.4M4.4 4.4L3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>` },
+];
+
+// Seed v1.2 data after boot
+setTimeout(() => { try { DataCore.seedV12DemoData(); } catch(e) {} }, 500);
+
+let activeModule = 'dashboard';
+let sidebarCollapsed = false;
+
+// Bug #8: Track Chart.js instances so they can be destroyed before re-render
+const _charts = {};
+function _destroyChart(id) {
+  if (_charts[id]) { _charts[id].destroy(); delete _charts[id]; }
+}
+function _createChart(id, config) {
+  _destroyChart(id);
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if (!ctx) return;
+  _charts[id] = new Chart(ctx, config);
+}
+
+function buildSidebar() {
+  const activeModuleIds = StorageService.getActiveModules();
+  const nav = document.getElementById('sidebarNav');
+  const lowStockCount = ProductsModule.getLowStock().length;
+  // V1.2: count high-priority alerts for insights badge
+  let insightAlerts = 0;
+  try { insightAlerts = InsightsEngine.getAlerts().filter(i => i.type === 'danger').length; } catch(e) {}
+  nav.innerHTML = '';
+
+  const section = document.createElement('div');
+  section.className = 'sidebar-section';
+
+  ALL_MODULES.forEach(mod => {
+    if (!mod.always && !activeModuleIds.includes(mod.id) && !mod.v12 && !mod.v13) return;
+    const btn = document.createElement('button');
+    btn.className = `sidebar-item${activeModule === mod.id ? ' active' : ''}`;
+    btn.dataset.module = mod.id;
+    let badge = '';
+    if (mod.id === 'products' && lowStockCount > 0) {
+      badge = `<span class="sidebar-badge">${lowStockCount}</span>`;
+    }
+    if (mod.id === 'insights' && insightAlerts > 0) {
+      badge = `<span class="sidebar-badge">${insightAlerts}</span>`;
+    }
+    btn.innerHTML = `${mod.icon}<span class="sidebar-item-label">${mod.label}</span>${badge}`;
+    btn.addEventListener('click', () => navigateTo(mod.id));
+    section.appendChild(btn);
+  });
+
+  nav.appendChild(section);
+}
+
+function navigateTo(moduleId) {
+  // ── Session-based notification guard (once per module per session) ──
+  if (!window.__bosNotified) window.__bosNotified = new Set();
+  const _isFirstVisit = !window.__bosNotified.has(moduleId);
+  window.__bosNotified.add(moduleId);
+
+  // Tear down any module-level listeners from previous view
+  _clearListeners();
+  activeModule = moduleId;
+  document.getElementById('topbarModule').textContent = ALL_MODULES.find(m => m.id === moduleId)?.label || moduleId;
+  buildSidebar();
+
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay').classList.remove('visible');
+  }
+
+  const renderers = {
+    dashboard: renderDashboard,
+    products: renderProducts,
+    customers: renderCustomers,
+    sales: renderSales,
+    finance: renderFinance,
+    reports: renderReports,
+    settings: () => SettingsModule.render(document.getElementById('pageContent')),
+    // ── V1.2 ──
+    purchases: renderPurchases,
+    insights: renderInsights,
+    // ── V1.3 ──
+    ai: renderAI,
+  };
+
+  EventBus.publish(EVENTS.MODULE_CHANGED, { module: moduleId });
+  AppState.touch();
+  (renderers[moduleId] || renderDashboard)();
+
+  // ── Instruction notifications: show only on first visit per session ──
+  if (_isFirstVisit) {
+    OnboardingService.showFor(moduleId);
+    const msgs = {
+      dashboard: 'Visão geral do seu negócio',
+      products:   'Gerencie produtos e estoque',
+      customers:  'Acompanhe seus clientes',
+      sales:      'Registre novas vendas',
+      finance:    'Acompanhe suas finanças',
+      reports:    'Relatórios e análises',
+      purchases:  'Compras e fornecedores',
+      insights:   'Análises inteligentes',
+      ai:         'Tire dúvidas com IA',
+      settings:   'Configure sua conta',
+    };
+    if (msgs[moduleId]) NotificationService.info(msgs[moduleId], 3000);
+  }
+}
+
+// Sidebar collapse
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  sidebarCollapsed = !sidebarCollapsed;
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('mainContent');
+  const icon = document.querySelector('#sidebarToggle svg path');
+  sidebar.classList.toggle('collapsed', sidebarCollapsed);
+  main.classList.toggle('sidebar-collapsed', sidebarCollapsed);
+  icon.setAttribute('d', sidebarCollapsed ? 'M6 4l4 4-4 4' : 'M10 12L6 8l4-4');
+});
+
+// Mobile menu
+document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+  document.getElementById('sidebarOverlay').classList.toggle('visible');
+});
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebarOverlay').classList.remove('visible');
+});
+
+// Close modals
+document.querySelectorAll('[data-close]').forEach(btn => {
+  btn.addEventListener('click', () => closeModal(btn.dataset.close));
+});
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(overlay.id); });
+});
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+/**
+ * showConfirm — substitui window.confirm() que falha silenciosamente em mobile.
+ *
+ * @param {string}   message     Texto da pergunta para o usuário.
+ * @param {Function} onConfirm   Callback executado se o usuário confirmar.
+ * @param {object}   [opts]
+ * @param {string}   [opts.title='Confirmar ação']
+ * @param {string}   [opts.confirmLabel='Confirmar']
+ * @param {boolean}  [opts.danger=true]
+ */
+function showConfirm(message, onConfirm, opts = {}) {
+  const {
+    title        = 'Confirmar ação',
+    confirmLabel = 'Confirmar',
+    danger       = true,
+  } = opts;
+
+  document.getElementById('confirmModalTitle').textContent   = title;
+  document.getElementById('confirmModalMessage').textContent = message;
+
+  const okBtn     = document.getElementById('confirmModalOk');
+  const cancelBtn = document.getElementById('confirmModalCancel');
+
+  // Clone to remove any previously attached one-shot listeners
+  const newOk     = okBtn.cloneNode(true);
+  const newCancel = cancelBtn.cloneNode(true);
+  okBtn.parentNode.replaceChild(newOk, okBtn);
+  cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+  const freshOk     = document.getElementById('confirmModalOk');
+  const freshCancel = document.getElementById('confirmModalCancel');
+
+  freshOk.textContent = confirmLabel;
+  freshOk.className   = `btn ${danger ? 'btn-danger' : 'btn-primary'}`;
+
+  freshOk.addEventListener('click', () => {
+    closeModal('modalConfirm');
+    onConfirm();
+  }, { once: true });
+
+  freshCancel.addEventListener('click', () => {
+    closeModal('modalConfirm');
+  }, { once: true });
+
+  openModal('modalConfirm');
+}
+
+// ── Dashboard ─────────────────────────────────────────────
+function renderDashboard() {
+  // All values come from DashboardService — screens never recompute.
+  const snap = DashboardService.getSnapshot();
+  const { metrics, weeklySales, lowStock } = snap;
+  const sales = SalesModule.getAll();
+  const todaySales = SalesModule.getTodaySales();
+  const recentSales = sales.slice(-5).reverse();
+  const revenue  = metrics.revenue;
+  const expenses = metrics.expenses;
+  const profit   = metrics.profit;
+  const stats    = StatisticsService.getSummary();
+  const cashFlowData = FinanceModule.getCashFlow(30);
+  const cashFlowNet = cashFlowData.reduce((s, d) => s + d.net, 0);
+  const currentBalance = cashFlowData.length > 0 ? cashFlowData[cashFlowData.length - 1].balance : profit;
+  const totalProducts = ProductsModule.getAll().length;
+  const totalCustomers = CustomersModule.getAll().length;
+  const fixedCosts = parseFloat(SettingsService.get().fixedCosts) || 0;
+  const profitAfterFixed = profit - fixedCosts;
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Dashboard</h2>
+        <p>Resumo geral do seu negócio</p>
+      </div>
+    </div>
+
+    <div class="section fade-up">
+      <h3 style="font-size:0.8125rem;font-weight:600;color:var(--text-2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">Resumo Financeiro</h3>
+      <div class="grid-4">
+        <div class="metric-card">
+          <div class="metric-icon green"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 13L8 8l3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="metric-label">Receita Total</div>
+          <div class="metric-value text-accent">${fmt(revenue)}</div>
+          <div class="metric-delta">${sales.length} vendas realizadas</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon red"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 5l5 6 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="metric-label">Despesas</div>
+          <div class="metric-value text-red">${fmt(expenses)}</div>
+          <div class="metric-delta">total de gastos</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon ${profit >= 0 ? 'blue' : 'red'}"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M13 5H7a4 4 0 000 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="metric-label">Lucro</div>
+          <div class="metric-value ${profit >= 0 ? 'text-green' : 'text-red'}">${fmt(profit)}</div>
+          <div class="metric-delta">${profit >= 0 ? 'positivo' : 'negativo'}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon ${currentBalance >= 0 ? 'green' : 'red'}"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M9 5v8M6 8l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="metric-label">Saldo em Caixa</div>
+          <div class="metric-value ${currentBalance >= 0 ? 'text-green' : 'text-red'}">${fmt(currentBalance)}</div>
+          <div class="metric-delta">${currentBalance >= 0 ? 'positivo' : 'negativo'}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section fade-up fade-up-1">
+      <h3 style="font-size:0.8125rem;font-weight:600;color:var(--text-2);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">Operacional</h3>
+      <div class="grid-4">
+        <div class="metric-card">
+          <div class="metric-icon yellow"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M18 18l-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="metric-label">Vendas Hoje</div>
+          <div class="metric-value">${todaySales.length}</div>
+          <div class="metric-delta">${fmt(todaySales.reduce((s,v) => s + v.total, 0))} faturados</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon blue"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M16 10H2M12 4l4 6-4 6M6 4l-4 6 4 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="metric-label">Produtos em Estoque</div>
+          <div class="metric-value">${totalProducts}</div>
+          <div class="metric-delta">${fmt(stats.inventoryValue)} em valor</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon red"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v8M9 12v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/></svg></div>
+          <div class="metric-label">Estoque Baixo</div>
+          <div class="metric-value text-red">${lowStock.length}</div>
+          <div class="metric-delta">${lowStock.length > 0 ? lowStock.slice(0,2).map(p=>p.name).join(', ') : 'Tudo em ordem'}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon ${totalCustomers > 0 ? 'green' : 'gray'}"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 15c0-2.5 2-4.5 4.5-4.5S15 12.5 15 15M9 9a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="metric-label">Clientes</div>
+          <div class="metric-value">${totalCustomers}</div>
+          <div class="metric-delta">cadastrados</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section fade-up fade-up-1b" style="margin-top:-4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;">
+        <div>
+          <div style="font-size:0.75rem;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Custos Fixos Mensais</div>
+          <div style="font-size:1.125rem;font-weight:700;">${fmt(fixedCosts)}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.75rem;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Lucro após Custos Fixos</div>
+          <div style="font-size:1.125rem;font-weight:700;${profitAfterFixed >= 0 ? 'color:var(--green)' : 'color:var(--red)'};">${fmt(profitAfterFixed)}</div>
+        </div>
+        <div style="font-size:0.7rem;color:var(--text-3);">Configure em <strong style="cursor:pointer;color:var(--accent);" onclick="window._nav('settings')">Ajustes > Empresa</strong></div>
+      </div>
+    </div>
+
+    <div class="grid-2 section fade-up fade-up-1">
+      <div class="card">
+        <div class="card-header">
+          <h3>Vendas — Últimos 7 dias</h3>
+        </div>
+        <div class="chart-wrap" style="height:200px;">
+          <canvas id="chartWeeklySales"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Timeline</h3>
+          <span class="text-xs text-muted">Atualiza em tempo real</span>
+        </div>
+        <div id="dashboardTimeline" class="timeline-host"></div>
+      </div>
+    </div>
+
+    <div class="grid-2 section fade-up fade-up-1b">
+      <div class="card">
+        <div class="card-header"><h3>Estatísticas</h3></div>
+        <div class="stats-grid">
+          <div><div class="stats-label">Ticket médio</div><div class="stats-value">${fmt(stats.averageTicket)}</div></div>
+          <div><div class="stats-label">Receita semanal</div><div class="stats-value">${fmt(stats.revenue.weekly)}</div></div>
+          <div><div class="stats-label">Receita mensal</div><div class="stats-value">${fmt(stats.revenue.monthly)}</div></div>
+          <div><div class="stats-label">Margem de lucro</div><div class="stats-value">${stats.profitMargin.toFixed(1)}%</div></div>
+          <div><div class="stats-label">Vendas/dia (30d)</div><div class="stats-value">${stats.salesPerDay.toFixed(1)}</div></div>
+          <div><div class="stats-label">Valor em estoque</div><div class="stats-value">${fmt(stats.inventoryValue)}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 section fade-up fade-up-2">
+      <div class="card">
+        <div class="card-header">
+          <h3>Últimas vendas</h3>
+          <button class="btn btn-ghost btn-sm" onclick="window._nav('sales')">Ver todas</button>
+        </div>
+        ${recentSales.length === 0 ? emptyState('Nenhuma venda registrada') : `
+        <div class="table-wrap" style="border:none;">
+          <table>
+            <thead><tr><th>Produto</th><th>Cliente</th><th>Total</th><th>Data</th></tr></thead>
+            <tbody>
+              ${recentSales.map(s => `
+                <tr>
+                  <td>${esc(s.productName)}</td>
+                  <td class="td-muted">${esc(s.customerName)}</td>
+                  <td><strong>${fmt(s.total)}</strong></td>
+                  <td class="td-muted text-xs">${fmtDate(s.createdAt)}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`}
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Produtos em alerta</h3>
+          <button class="btn btn-ghost btn-sm" onclick="window._nav('products')">Ver estoque</button>
+        </div>
+        ${lowStock.length === 0
+          ? `<div style="text-align:center;padding:32px 0;color:var(--text-2)"><span style="font-size:2rem;">✓</span><br>Estoque em dia</div>`
+          : lowStock.map(p => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:0.8125rem;font-weight:500;">${esc(p.name)}</div>
+                <div style="font-size:0.75rem;color:var(--text-3);">${esc(p.category)}</div>
+              </div>
+              <span class="badge badge-${p.quantity === 0 ? 'red' : 'yellow'}">${p.quantity} un.</span>
+            </div>`).join('')}
+      </div>
+    </div>
+  `;
+
+  // Weekly sales chart (destroy previous instance first)
+  _createChart('chartWeeklySales', {
+    type: 'bar',
+    data: {
+      labels: weeklySales.map(d => d.label),
+      datasets: [{
+        data: weeklySales.map(d => d.value),
+        backgroundColor: 'rgba(59,130,246,0.25)',
+        borderColor: '#3B82F6',
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => ` R$ ${ctx.raw.toFixed(2)}` }
+      }},
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7280', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7280', font: { size: 11 }, callback: v => `R$${v}` } }
+      }
+    }
+  });
+
+  // V1.2: Top Insights panel injected after existing stats grid
+  const topInsights = (() => { try { return InsightsEngine.getTopInsights(4); } catch(e) { return []; } })();
+  const typeBorder12 = { success:'#22c55e', warning:'#f59e0b', danger:'#ef4444', info:'#3b82f6' };
+  const forecasts = (() => { try { return ProductsModule.getRuptureForecasts ? ProductsModule.getRuptureForecasts(10) : []; } catch(e) { return []; } })();
+
+  const insightsHTML = topInsights.length === 0 ? '' : `
+    <div class="section fade-up">
+      <div class="card-header" style="margin-bottom:12px;">
+        <h3>Insights automáticos</h3>
+        <button class="btn btn-ghost btn-sm" onclick="window._nav('insights')">Ver todos →</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;">
+        ${topInsights.map(ins => `
+          <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ${typeBorder12[ins.type]};border-radius:var(--radius);padding:14px;">
+            <div style="font-size:.8125rem;font-weight:600;margin-bottom:4px;">${esc(ins.title)}</div>
+            <div style="font-size:.75rem;color:var(--text-2);line-height:1.5;">${esc(ins.body)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  const forecastHTML = forecasts.length === 0 ? '' : `
+    <div class="card fade-up" style="border-color:rgba(245,158,11,0.3);">
+      <div class="card-header"><h3>⏳ Previsão de ruptura de estoque</h3><button class="btn btn-ghost btn-sm" onclick="window._nav('purchases')">Comprar →</button></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;">
+        ${forecasts.map(f => `
+          <div style="padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);">
+            <div style="font-size:.8rem;font-weight:500;margin-bottom:2px;">${esc(f.name)}</div>
+            <div style="font-size:.75rem;color:var(--text-3);">${f.quantity} un. restantes</div>
+            <div style="font-size:1rem;font-weight:700;color:var(--yellow);margin-top:4px;">${f.daysLeft}d</div>
+            <div style="font-size:.7rem;color:var(--text-3);">até zerar</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  // Inject insights + forecasts after last grid section
+  const pageContent = document.getElementById('pageContent');
+  if (insightsHTML) pageContent.insertAdjacentHTML('beforeend', insightsHTML);
+  if (forecastHTML) pageContent.insertAdjacentHTML('beforeend', forecastHTML);
+
+  // Mount live Timeline (auto-updates on any EventBus event).
+  Timeline.mount(document.getElementById('dashboardTimeline'), { limit: 12 });
+
+  window._nav = navigateTo;
+}
+
+// ── Products ──────────────────────────────────────────────
+function renderProducts() {
+  let products = ProductsModule.getAll();
+  let filterText = '';
+
+  const render = () => {
+    const filtered = products.filter(p =>
+      p.name.toLowerCase().includes(filterText) || p.category.toLowerCase().includes(filterText)
+    );
+
+    // Bug fix: update counter every time render() runs (not only on full page re-render)
+    const counterEl = document.getElementById('productsCounter');
+    if (counterEl) counterEl.textContent =
+      `${products.length} produto${products.length !== 1 ? 's' : ''} cadastrado${products.length !== 1 ? 's' : ''}`;
+
+    document.getElementById('productsTableBody').innerHTML = filtered.length === 0
+      ? `<tr><td colspan="6"><div class="empty-state">
+          <div class="empty-state-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 5l8-3 8 3v10l-8 3-8-3V5z" stroke="currentColor" stroke-width="1.5"/></svg></div>
+          <h3>Nenhum produto</h3>
+          <p>${filterText ? 'Nenhum resultado para "'+esc(filterText)+'"' : 'Adicione seu primeiro produto.'}</p>
+          ${!filterText ? '<button class="btn btn-primary" onclick="document.getElementById(\'addProductBtn\').click()">Adicionar produto</button>' : ''}
+        </div></td></tr>`
+      : filtered.map(p => {
+          const stockClass = p.quantity === 0 ? 'badge-red' : p.quantity <= p.minStock ? 'badge-yellow' : 'badge-green';
+          const stockLabel = p.quantity === 0 ? 'Zerado' : p.quantity <= p.minStock ? 'Baixo' : 'OK';
+          return `<tr>
+            <td><strong>${esc(p.name)}</strong></td>
+            <td><span class="badge badge-gray">${esc(p.category)}</span></td>
+            <td><strong>${fmt(p.price)}</strong></td>
+            <td>${p.quantity}</td>
+            <td><span class="badge ${stockClass}">${stockLabel}</span></td>
+            <td>
+              <div class="td-actions">
+                <button class="btn btn-ghost btn-icon btn-sm" title="Editar" onclick="window._editProduct('${p.id}')">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 2l2 2L4 11H2V9L9 2z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="btn btn-danger btn-icon btn-sm" title="Remover" onclick="window._delProduct('${p.id}')">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3h9M5 3V2h3v1M4 3v7h5V3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+  };
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Produtos</h2>
+        <p id="productsCounter">${products.length} produto${products.length !== 1 ? 's' : ''} cadastrado${products.length !== 1 ? 's' : ''}</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm" onclick="window._exportProducts()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar CSV
+        </button>
+        <button class="btn btn-primary" id="addProductBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Novo produto
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <div class="search-bar" style="flex:1;min-width:200px;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <input type="text" class="input" id="productSearch" placeholder="Buscar produto ou categoria…" style="padding-left:34px;"/>
+        </div>
+      </div>
+      <div class="table-wrap" style="border:none;border-top:1px solid var(--border);margin:0 -20px;">
+        <table>
+          <thead><tr><th>Nome</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="productsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  render();
+
+  document.getElementById('addProductBtn').addEventListener('click', () => {
+    clearProductForm();
+    document.getElementById('productModalTitle').textContent = 'Novo Produto';
+    openModal('modalProduct');
+  });
+
+  document.getElementById('productSearch').addEventListener('input', e => {
+    filterText = e.target.value.toLowerCase();
+    render();
+  });
+
+  window._editProduct = id => {
+    const p = StorageService.getProductById(id);
+    if (!p) return;
+    document.getElementById('productId').value = p.id;
+    document.getElementById('productName').value = p.name;
+    document.getElementById('productCategory').value = p.category;
+    document.getElementById('productPrice').value = p.price;
+    document.getElementById('productQty').value = p.quantity;
+    document.getElementById('productMinStock').value = p.minStock;
+    document.getElementById('productModalTitle').textContent = 'Editar Produto';
+    openModal('modalProduct');
+  };
+
+  // Bug fix: replaced window.confirm() (falha silenciosamente em mobile)
+  // com showConfirm() customizado que funciona em qualquer contexto.
+  window._delProduct = id => {
+    const product = StorageService.getProductById(id);
+    if (!product) {
+      NotificationService.error('Produto não encontrado. Atualize a página.');
+      return;
+    }
+    showConfirm(
+      `Remover "${esc(product.name)}"?\n\nEsta ação não pode ser desfeita. O produto será removido do estoque e dos relatórios.`,
+      () => {
+        ProductsModule.remove(id);
+        products = ProductsModule.getAll();
+        render();
+        buildSidebar();
+      },
+      { title: 'Remover Produto', confirmLabel: 'Remover', danger: true }
+    );
+  };
+
+  window._exportProducts = () => ExportService.exportProducts(ProductsModule.getAll());
+
+  // Bug fix: adicionado _sub para PRODUCT_DELETED — a view agora reage
+  // ao evento de deleção além de PRODUCT_CREATED e PRODUCT_UPDATED.
+  _sub(EVENTS.PRODUCT_CREATED, () => { products = ProductsModule.getAll(); render(); buildSidebar(); });
+  _sub(EVENTS.PRODUCT_UPDATED, () => { products = ProductsModule.getAll(); render(); buildSidebar(); });
+  _sub(EVENTS.PRODUCT_DELETED, () => { products = ProductsModule.getAll(); render(); buildSidebar(); });
+}
+
+// ── Customers ─────────────────────────────────────────────
+function renderCustomers() {
+  let customers = CustomersModule.getEnrichedCustomers();
+
+  const statusBadge = s => ({
+    novo: 'badge-blue', ativo: 'badge-green', inativo: 'badge-yellow', perdido: 'badge-red'
+  }[s] || 'badge-gray');
+
+  const render = () => {
+    document.getElementById('customersTableBody').innerHTML = customers.length === 0
+      ? `<tr><td colspan="7"><div class="empty-state">
+          <div class="empty-state-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="8" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M1 17c0-3.31 3.13-6 7-6s7 2.69 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <h3>Nenhum cliente</h3>
+          <p>Adicione seu primeiro cliente.</p>
+          <button class="btn btn-primary" onclick="document.getElementById('addCustomerBtn').click()">Novo cliente</button>
+        </div></td></tr>`
+      : customers.map(c => `<tr>
+          <td>
+            <strong>${esc(c.name)}</strong>
+            <div class="text-xs text-muted">${esc(c.email) || esc(c.phone) || '—'}</div>
+          </td>
+          <td>${c.purchases}</td>
+          <td><strong class="text-green">${fmt(c.totalSpent)}</strong></td>
+          <td class="text-muted">${fmt(c.avgTicket || 0)}</td>
+          <td class="text-muted text-xs">${c.frequencyPerMonth ? c.frequencyPerMonth.toFixed(1) + '/mês' : '—'}</td>
+          <td class="text-muted text-xs">${c.daysSinceLastPurchase !== null ? c.daysSinceLastPurchase + 'd atrás' : '—'}</td>
+          <td>
+            <span class="badge ${statusBadge(c.status)}">${esc(c.status) || 'novo'}</span>
+          </td>
+        </tr>`).join('');
+  };
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Clientes</h2>
+        <p>${customers.length} cliente${customers.length !== 1 ? 's' : ''} cadastrado${customers.length !== 1 ? 's' : ''}</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm" onclick="window._exportCustomers()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar CSV
+        </button>
+        <button class="btn btn-primary" id="addCustomerBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Novo cliente
+        </button>
+      </div>
+    </div>
+
+    <div class="grid-4 section fade-up">
+      <div class="metric-card">
+        <div class="metric-label">Total de Clientes</div>
+        <div class="metric-value">${customers.length}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Clientes Ativos</div>
+        <div class="metric-value text-green">${customers.filter(c => c.status === 'ativo').length}</div>
+        <div class="metric-delta">compra em 30 dias</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Ticket Médio Geral</div>
+        <div class="metric-value text-accent">${fmt(customers.reduce((a,c) => a + (c.avgTicket||0), 0) / Math.max(1, customers.filter(c => c.purchases > 0).length))}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Clientes em Risco</div>
+        <div class="metric-value text-yellow">${customers.filter(c => c.status === 'inativo' || c.status === 'perdido').length}</div>
+        <div class="metric-delta">inativos + perdidos</div>
+      </div>
+    </div>
+
+    <div class="card fade-up" style="padding:0;">
+      <div class="table-wrap" style="border:none;">
+        <table>
+          <thead><tr><th>Nome</th><th>Compras</th><th>Total Gasto</th><th>Ticket Médio</th><th>Frequência</th><th>Última Compra</th><th>Status</th></tr></thead>
+          <tbody id="customersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  render();
+
+  document.getElementById('addCustomerBtn').addEventListener('click', () => {
+    document.getElementById('customerName').value = '';
+    document.getElementById('customerPhone').value = '';
+    document.getElementById('customerEmail').value = '';
+    openModal('modalCustomer');
+  });
+
+  window._exportCustomers = () => ExportService.exportCustomers(CustomersModule.getAll());
+
+  const _refreshCustomers = () => { customers = CustomersModule.getEnrichedCustomers(); render(); };
+  _sub(EVENTS.CUSTOMER_CREATED, _refreshCustomers);
+  _sub(EVENTS.CUSTOMER_UPDATED, _refreshCustomers);
+  // Refresh when a sale links a customer (updates totalSpent / purchases)
+  _sub(EVENTS.SALE_CREATED, _refreshCustomers);
+}
+
+// ── Sales ─────────────────────────────────────────────────
+function renderSales() {
+  const sales = SalesModule.getAll().slice().reverse();
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Vendas</h2>
+        <p>${sales.length} venda${sales.length !== 1 ? 's' : ''} registrada${sales.length !== 1 ? 's' : ''}</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm" onclick="window._exportSales()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar CSV
+        </button>
+        <button class="btn btn-primary" id="addSaleBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Nova venda
+        </button>
+      </div>
+    </div>
+
+    <div class="card" style="padding:0;">
+      <div class="table-wrap" style="border:none;">
+        <table>
+          <thead><tr><th>Data</th><th>Produto</th><th>Qtd.</th><th>Cliente</th><th>Pagamento</th><th>Total</th></tr></thead>
+          <tbody>
+            ${sales.length === 0
+              ? `<tr><td colspan="6"><div class="empty-state">
+                  <div class="empty-state-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 2h3l2 9h9l2-7H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  <h3>Nenhuma venda</h3>
+                  <p>Registre sua primeira venda.</p>
+                  <button class="btn btn-primary" id="emptySaleBtn">Registrar venda</button>
+                </div></td></tr>`
+              : sales.map(s => {
+                  const pmtColors = {dinheiro:'gray', pix:'green', cartao:'blue', fiado:'yellow'};
+                  const pmtLabels = {dinheiro:'Dinheiro', pix:'Pix', cartao:'Cartão', fiado:'Fiado'};
+                  return `<tr>
+                    <td class="td-muted text-xs">${fmtDate(s.createdAt)}</td>
+                    <td><strong>${esc(s.productName)}</strong></td>
+                    <td>${s.quantity}</td>
+                    <td class="td-muted">${esc(s.customerName)}</td>
+                    <td><span class="badge badge-${pmtColors[s.payment]||'gray'}">${pmtLabels[s.payment]||s.payment}</span></td>
+                    <td><strong class="text-green">${fmt(s.total)}</strong></td>
+                  </tr>`;
+                }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  const setupSaleModal = () => {
+    // Bug #6 & #7: Reset all modal fields and info panels before opening
+    document.getElementById('saleQty').value = '';
+    document.getElementById('saleProductInfo').style.display = 'none';
+    document.getElementById('saleTotalBox').style.display = 'none';
+    document.getElementById('saleTotalDisplay').textContent = 'R$ 0,00';
+    document.getElementById('salePayment').value = 'dinheiro';
+
+    // Populate products dropdown (fresh, includes current stock)
+    const sel = document.getElementById('saleProduct');
+    sel.innerHTML = '<option value="">Selecione um produto…</option>';
+    ProductsModule.getAll().forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${esc(p.name)} (${p.quantity} un.)`;
+      opt.dataset.price = p.price;
+      opt.dataset.stock = p.quantity;
+      sel.appendChild(opt);
+    });
+    sel.value = ''; // ensure blank is selected after repopulation
+
+    // Populate customers dropdown
+    const csel = document.getElementById('saleCustomer');
+    csel.innerHTML = '<option value="">Balcão (sem vínculo)</option>';
+    CustomersModule.getAll().forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.dataset.name = c.name;
+      opt.textContent = c.name;
+      csel.appendChild(opt);
+    });
+
+    // Bug #4 & accumulation: Use cloneNode trick to remove old listeners before attaching new ones
+    const newSel = sel.cloneNode(true);
+    sel.parentNode.replaceChild(newSel, sel);
+    const newQty = document.getElementById('saleQty').cloneNode(true);
+    document.getElementById('saleQty').parentNode.replaceChild(newQty, document.getElementById('saleQty'));
+
+    const updateTotal = () => {
+      const s = document.getElementById('saleProduct');
+      const opt = s.options[s.selectedIndex];
+      const qty = parseInt(document.getElementById('saleQty').value, 10) || 0;
+      if (opt?.value && qty > 0) {
+        const price = parseFloat(opt.dataset.price);
+        document.getElementById('saleTotalBox').style.display = 'block';
+        document.getElementById('saleTotalDisplay').textContent = fmt(price * qty);
+      } else {
+        document.getElementById('saleTotalBox').style.display = 'none';
+      }
+    };
+
+    document.getElementById('saleProduct').addEventListener('change', () => {
+      const s = document.getElementById('saleProduct');
+      const opt = s.options[s.selectedIndex];
+      if (opt?.value) {
+        document.getElementById('saleProductInfo').style.display = 'block';
+        document.getElementById('salePriceDisplay').textContent = fmt(parseFloat(opt.dataset.price));
+        document.getElementById('saleStockDisplay').textContent = `${opt.dataset.stock} un.`;
+      } else {
+        document.getElementById('saleProductInfo').style.display = 'none';
+      }
+      updateTotal();
+    });
+    document.getElementById('saleQty').addEventListener('input', updateTotal);
+
+    openModal('modalSale');
+  };
+
+  document.getElementById('addSaleBtn').addEventListener('click', setupSaleModal);
+  // Bug #4: emptySaleBtn only exists when there are no sales — use live lookup inside handler
+  const emptyBtn = document.getElementById('emptySaleBtn');
+  if (emptyBtn) emptyBtn.addEventListener('click', setupSaleModal);
+
+  window._exportSales = () => ExportService.exportSales(SalesModule.getAll());
+}
+
+// ── Finance ───────────────────────────────────────────────
+function renderFinance() {
+  const revenue       = FinanceModule.getTotalRevenue();
+  const expenses      = FinanceModule.getTotalExpenses();
+  const profit        = FinanceModule.getProfit();
+  const grossProfit   = FinanceModule.getGrossProfit ? FinanceModule.getGrossProfit() : profit;
+  const transactions  = FinanceModule.getAll().slice(0, 30);
+  const monthly       = FinanceModule.getMonthlyReport();
+  const cashFlow      = FinanceModule.getCashFlow ? FinanceModule.getCashFlow(14) : [];
+  const byCategory    = FinanceModule.getExpensesByCategory ? FinanceModule.getExpensesByCategory() : [];
+  const margin        = revenue > 0 ? ((profit / revenue) * 100) : 0;
+  const fixedCosts    = parseFloat(SettingsService.get().fixedCosts) || 0;
+  const profitAfterFixed = profit - fixedCosts;
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Financeiro</h2>
+        <p>Fluxo de caixa, lucro e categorias</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm" onclick="window._exportFinance()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="window._exportCashFlow()">↓ Fluxo CSV</button>
+        <button class="btn btn-primary" id="addExpenseBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Nova despesa
+        </button>
+      </div>
+    </div>
+
+    <div class="grid-4 section fade-up">
+      <div class="metric-card">
+        <div class="metric-icon green"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 13L8 8l3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="metric-label">Receita Total</div>
+        <div class="metric-value text-green">${fmt(revenue)}</div>
+        <div class="metric-delta">todas as vendas</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon red"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 5l5 6 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="metric-label">Despesas Totais</div>
+        <div class="metric-value text-red">${fmt(expenses)}</div>
+        <div class="metric-delta">${byCategory.length} categorias</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon ${profit >= 0 ? 'blue' : 'red'}"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M13 5H7a4 4 0 000 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="metric-label">Lucro Líquido</div>
+        <div class="metric-value ${profit >= 0 ? 'text-green' : 'text-red'}">${fmt(profit)}</div>
+        <div class="metric-delta">Margem: ${margin.toFixed(1)}%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon ${grossProfit >= 0 ? 'green' : 'red'}"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 10h14M2 6h14M6 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="metric-label">Lucro Bruto</div>
+        <div class="metric-value ${grossProfit >= 0 ? 'text-green' : 'text-red'}">${fmt(grossProfit)}</div>
+        <div class="metric-delta">excl. desp. operacionais</div>
+      </div>
+    </div>
+
+    <div class="section fade-up fade-up-05" style="margin-top:-8px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Custos Fixos Mensais</div>
+            <div style="font-size:1.25rem;font-weight:700;color:var(--text-1);">${fmt(fixedCosts)}</div>
+            <div style="font-size:0.725rem;color:var(--text-3);margin-top:2px;">${fixedCosts > 0 ? 'configurado em Ajustes > Empresa' : 'nenhum valor configurado'}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.8rem;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Lucro após Custos Fixos</div>
+            <div style="font-size:1.25rem;font-weight:700;${profitAfterFixed >= 0 ? 'color:var(--green)' : 'color:var(--red)'};">${fmt(profitAfterFixed)}</div>
+            <div style="font-size:0.725rem;color:var(--text-3);margin-top:2px;">receita - despesas - custos fixos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 section fade-up fade-up-1">
+      <div class="card">
+        <div class="card-header"><h3>Receita vs Despesas — 12 meses</h3></div>
+        <div class="chart-wrap" style="height:200px;">
+          <canvas id="chartMonthly"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Fluxo de Caixa — 14 dias</h3></div>
+        <div class="chart-wrap" style="height:200px;">
+          <canvas id="chartCashFlow"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 section fade-up fade-up-2">
+      <div class="card" style="padding:0;">
+        <div class="card-header" style="padding:20px 20px 0;"><h3>Lançamentos recentes</h3></div>
+        <div class="table-wrap" style="border:none;margin-top:12px;">
+          <table>
+            <thead><tr><th>Descrição</th><th>Tipo</th><th>Valor</th><th>Data</th></tr></thead>
+            <tbody>
+              ${transactions.length === 0
+                ? `<tr><td colspan="4"><div class="empty-state"><p>Nenhum lançamento ainda.</p></div></td></tr>`
+                : transactions.map(t => `<tr>
+                    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.description) || esc(t.productName)}</td>
+                    <td><span class="badge badge-${t.type === 'receita' ? 'green' : 'red'}">${t.type === 'receita' ? 'Receita' : 'Despesa'}</span></td>
+                    <td class="${t.type === 'receita' ? 'text-green' : 'text-red'}"><strong>${t.type === 'receita' ? '+' : '-'}${fmt(t.amount || t.total)}</strong></td>
+                    <td class="td-muted text-xs">${fmtDate(t.createdAt)}</td>
+                  </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Despesas por Categoria</h3></div>
+        ${byCategory.length === 0
+          ? `<div class="empty-state"><p>Nenhuma despesa registrada.</p></div>`
+          : (() => {
+              const total = byCategory.reduce((a, c) => a + c.total, 0);
+              return byCategory.map((c, i) => {
+                const pct = total > 0 ? (c.total / total * 100) : 0;
+                const colors = ['#3B82F6','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
+                return `<div style="margin-bottom:12px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                    <span style="font-size:.8125rem;font-weight:500;">${esc(c.category)}</span>
+                    <span style="font-size:.8125rem;color:var(--text-2);">${fmt(c.total)} <span style="color:var(--text-3)">(${pct.toFixed(1)}%)</span></span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${pct.toFixed(1)}%;background:${colors[i % colors.length]};"></div></div>
+                </div>`;
+              }).join('');
+            })()}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('addExpenseBtn').addEventListener('click', () => {
+    document.getElementById('expenseDesc').value = '';
+    document.getElementById('expenseAmount').value = '';
+    openModal('modalExpense');
+  });
+
+  window._exportFinance = () => ExportService.exportFinance(
+    StorageService.getExpenses(), StorageService.getSales()
+  );
+  window._exportCashFlow = () => {
+    if (ExportService.exportCashFlow) ExportService.exportCashFlow(cashFlow);
+  };
+
+  // Monthly revenue vs expenses chart
+  _createChart('chartMonthly', {
+    type: 'line',
+    data: {
+      labels: monthly.map(m => m.label),
+      datasets: [
+        { label: 'Receita', data: monthly.map(m => m.revenue), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.08)', tension: 0.4, fill: true, pointRadius: 3 },
+        { label: 'Despesas', data: monthly.map(m => m.expenses), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.08)', tension: 0.4, fill: true, pointRadius: 3 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#9CA3AF', boxWidth: 12, font: { size: 11 } } }, tooltip: { callbacks: { label: ctx => ` R$ ${ctx.raw.toFixed(2)}` } } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7280', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7280', font: { size: 10 }, callback: v => `R$${v}` } }
+      }
+    }
+  });
+
+  // Cash flow 14-day chart (net per day + running balance)
+  if (cashFlow.length > 0) {
+    _createChart('chartCashFlow', {
+      type: 'bar',
+      data: {
+        labels: cashFlow.map(d => d.date),
+        datasets: [
+          { label: 'Entradas', data: cashFlow.map(d => d.income), backgroundColor: 'rgba(34,197,94,0.5)', borderColor: '#22c55e', borderWidth: 1, borderRadius: 4 },
+          { label: 'Saídas', data: cashFlow.map(d => -d.outcome), backgroundColor: 'rgba(239,68,68,0.4)', borderColor: '#ef4444', borderWidth: 1, borderRadius: 4 },
+          { type: 'line', label: 'Saldo', data: cashFlow.map(d => d.balance), borderColor: '#3B82F6', backgroundColor: 'transparent', tension: 0.4, pointRadius: 2, borderWidth: 2, yAxisID: 'y' },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#9CA3AF', boxWidth: 10, font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` R$ ${Math.abs(ctx.raw).toFixed(2)}` } } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7280', font: { size: 9 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6B7280', font: { size: 9 }, callback: v => `R$${v}` } }
+        }
+      }
+    });
+  }
+}
+
+// ── Reports ───────────────────────────────────────────────
+function renderReports() {
+  const topProducts = SalesModule.getTopProducts(5);
+  const topCustomers = CustomersModule.getTopCustomers(5);
+  const revenue = FinanceModule.getTotalRevenue();
+  const profit = FinanceModule.getProfit();
+  const salesCount = SalesModule.getAll().length;
+  const productsCount = ProductsModule.getAll().length;
+  const lowStock = ProductsModule.getLowStock();
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Relatórios</h2>
+        <p>Análise e insights do negócio</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm" onclick="window._exportSales()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar vendas
+        </button>
+      </div>
+    </div>
+
+    <div class="grid-4 section fade-up">
+      <div class="metric-card">
+        <div class="metric-label">Total de Vendas</div>
+        <div class="metric-value">${salesCount}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Receita Gerada</div>
+        <div class="metric-value text-green">${fmt(revenue)}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Lucro</div>
+        <div class="metric-value ${profit>=0?'text-green':'text-red'}">${fmt(profit)}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Produtos em Estoque</div>
+        <div class="metric-value">${productsCount}</div>
+      </div>
+    </div>
+
+    <div class="grid-2 section fade-up fade-up-1">
+      <div class="card">
+        <div class="card-header"><h3>Produtos mais vendidos</h3></div>
+        ${topProducts.length === 0
+          ? `<div class="empty-state"><p>Nenhuma venda registrada ainda.</p></div>`
+          : topProducts.map((p, i) => `
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:0.75rem;font-weight:700;color:var(--text-3);width:18px;">${i+1}</span>
+              <div style="flex:1;">
+                <div style="font-size:0.8125rem;font-weight:500;">${esc(p.name)}</div>
+                <div style="font-size:0.75rem;color:var(--text-3);">${p.qty} unidades</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${Math.round(p.total/topProducts[0].total*100)}%;background:var(--accent);"></div></div>
+              </div>
+              <strong class="text-green" style="font-size:0.875rem;">${fmt(p.total)}</strong>
+            </div>`).join('')}
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Melhores clientes</h3></div>
+        ${topCustomers.filter(c => c.totalSpent > 0).length === 0
+          ? `<div class="empty-state"><p>Nenhuma venda com cliente vinculado.</p></div>`
+          : topCustomers.filter(c => c.totalSpent > 0).map((c, i) => `
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:0.75rem;font-weight:700;color:var(--text-3);width:18px;">${i+1}</span>
+              <div style="flex:1;">
+                <div style="font-size:0.8125rem;font-weight:500;">${esc(c.name)}</div>
+                <div style="font-size:0.75rem;color:var(--text-3);">${c.purchases} compra${c.purchases !== 1 ? 's' : ''}</div>
+              </div>
+              <strong class="text-accent" style="font-size:0.875rem;">${fmt(c.totalSpent)}</strong>
+            </div>`).join('')}
+      </div>
+    </div>
+
+    ${lowStock.length > 0 ? `
+    <div class="card fade-up fade-up-2">
+      <div class="card-header">
+        <h3>⚠️ Produtos com estoque crítico</h3>
+        <span class="badge badge-red">${lowStock.length} produto${lowStock.length>1?'s':''}</span>
+      </div>
+      <div class="table-wrap" style="border:none;margin:0 -20px;">
+        <table>
+          <thead><tr><th>Produto</th><th>Categoria</th><th>Estoque</th><th>Mínimo</th><th>Ação</th></tr></thead>
+          <tbody>
+            ${lowStock.map(p => `<tr>
+              <td><strong>${esc(p.name)}</strong></td>
+              <td class="td-muted">${esc(p.category)}</td>
+              <td><span class="badge badge-${p.quantity===0?'red':'yellow'}">${p.quantity} un.</span></td>
+              <td class="td-muted">${p.minStock}</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="window._nav('products')">Ver produto</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>` : ''}
+  `;
+  // _exportSales is defined globally in renderSales() — no redefinition needed here
+}
+
+// ── Modal actions ─────────────────────────────────────────
+document.getElementById('saveProductBtn').addEventListener('click', () => {
+  const id = document.getElementById('productId').value;
+  const data = {
+    name: document.getElementById('productName').value,
+    category: document.getElementById('productCategory').value,
+    price: document.getElementById('productPrice').value,
+    quantity: document.getElementById('productQty').value,
+    minStock: document.getElementById('productMinStock').value,
+  };
+  if (!data.name || !data.price) { NotificationService.error('Preencha nome e preço.'); return; }
+
+  if (id) { ProductsModule.update(id, data); } else { ProductsModule.create(data); }
+  closeModal('modalProduct');
+  clearProductForm();
+  if (activeModule === 'products') renderProducts();
+  if (activeModule === 'dashboard') renderDashboard();
+  buildSidebar();
+});
+
+document.getElementById('saveCustomerBtn').addEventListener('click', () => {
+  const name = document.getElementById('customerName').value;
+  if (!name) { NotificationService.error('Nome do cliente é obrigatório.'); return; }
+  CustomersModule.create({
+    name,
+    phone: document.getElementById('customerPhone').value,
+    email: document.getElementById('customerEmail').value,
+  });
+  closeModal('modalCustomer');
+  if (activeModule === 'customers') renderCustomers();
+  if (activeModule === 'dashboard') renderDashboard();
+});
+
+document.getElementById('saveSaleBtn').addEventListener('click', () => {
+  const productId = document.getElementById('saleProduct').value;
+  const qty = parseInt(document.getElementById('saleQty').value, 10);
+  const payment = document.getElementById('salePayment').value;
+  const cSel = document.getElementById('saleCustomer');
+  const customerId = cSel.value;
+  const customerName = cSel.options[cSel.selectedIndex]?.dataset.name || 'Balcão';
+  if (!productId || !qty || qty < 1) { NotificationService.error('Selecione produto e quantidade.'); return; }
+  const sale = SalesModule.create({ productId, quantity: qty, payment, customerId, customerName });
+  if (sale) {
+    closeModal('modalSale');
+    if (activeModule === 'sales') renderSales();
+    if (activeModule === 'dashboard') renderDashboard();
+    buildSidebar();
+  }
+});
+
+document.getElementById('saveExpenseBtn').addEventListener('click', () => {
+  const description = document.getElementById('expenseDesc').value;
+  const amount = document.getElementById('expenseAmount').value;
+  const category = document.getElementById('expenseCategory').value;
+  if (!description || !amount) { NotificationService.error('Preencha descrição e valor.'); return; }
+  FinanceModule.addExpense({ description, amount, category });
+  closeModal('modalExpense');
+  if (activeModule === 'finance') renderFinance();
+  if (activeModule === 'dashboard') renderDashboard();
+});
+
+// ── V1.2 Modal Handlers ───────────────────────────────────
+
+document.getElementById('saveSupplierBtn').addEventListener('click', () => {
+  const id   = document.getElementById('supplierId').value;
+  const data = {
+    name:     document.getElementById('supplierName').value,
+    contact:  document.getElementById('supplierContact').value,
+    phone:    document.getElementById('supplierPhone').value,
+    email:    document.getElementById('supplierEmail').value,
+    cnpj:     document.getElementById('supplierCnpj').value,
+    category: document.getElementById('supplierCategory').value,
+  };
+  if (!data.name.trim()) { NotificationService.error('Nome do fornecedor é obrigatório.'); return; }
+  if (id) {
+    PurchasesModule.updateSupplier(id, data);
+  } else {
+    PurchasesModule.createSupplier(data);
+  }
+  closeModal('modalSupplier');
+  clearSupplierForm();
+  if (activeModule === 'purchases') renderPurchases();
+});
+
+// Purchase quantity × cost = total live calculation
+['purchaseQty','purchaseUnitCost'].forEach(fid => {
+  document.getElementById(fid)?.addEventListener('input', () => {
+    const qty  = parseFloat(document.getElementById('purchaseQty').value) || 0;
+    const cost = parseFloat(document.getElementById('purchaseUnitCost').value) || 0;
+    const total = qty * cost;
+    const box  = document.getElementById('purchaseTotalBox');
+    const disp = document.getElementById('purchaseTotalCost');
+    box.style.display = (qty > 0 && cost > 0) ? 'block' : 'none';
+    if (disp) disp.textContent = fmt(total);
+  });
+});
+
+document.getElementById('savePurchaseBtn').addEventListener('click', () => {
+  const productSel  = document.getElementById('purchaseProduct');
+  const supplierSel = document.getElementById('purchaseSupplier');
+  const productId   = productSel.value;
+  const qty         = parseInt(document.getElementById('purchaseQty').value, 10);
+  const unitCost    = parseFloat(document.getElementById('purchaseUnitCost').value);
+
+  if (!productId) { NotificationService.error('Selecione um produto.'); return; }
+  if (!qty || qty <= 0) { NotificationService.error('Quantidade inválida.'); return; }
+  if (!unitCost || unitCost <= 0) { NotificationService.error('Custo unitário inválido.'); return; }
+
+  const supplierOpt = supplierSel.options[supplierSel.selectedIndex];
+  const result = PurchasesModule.createPurchase({
+    productId,
+    productName:  productSel.options[productSel.selectedIndex]?.dataset.name || '',
+    supplierId:   supplierSel.value || null,
+    supplierName: supplierOpt?.dataset.name || 'Fornecedor Avulso',
+    quantity:     qty,
+    unitCost,
+    totalCost:    qty * unitCost,
+    notes:        document.getElementById('purchaseNotes').value,
+  });
+
+  if (result) {
+    closeModal('modalPurchase');
+    if (activeModule === 'purchases') renderPurchases();
+    if (activeModule === 'dashboard')  renderDashboard();
+    buildSidebar();
+  }
+});
+
+function clearSupplierForm() {
+  ['supplierId','supplierName','supplierContact','supplierPhone','supplierEmail','supplierCnpj','supplierCategory']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function clearProductForm() {
+  ['productId','productName','productCategory','productPrice','productQty','productMinStock'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+// ── Helpers ───────────────────────────────────────────────
+function fmt(n) {
+  return 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtDate(ts) {
+  return new Date(ts).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
+
+function timeAgo(ts) {
+  const d = Date.now() - ts;
+  if (d < 60000)  return 'agora mesmo';
+  if (d < 3600000) return `${Math.floor(d/60000)}min atrás`;
+  if (d < 86400000) return `${Math.floor(d/3600000)}h atrás`;
+  return `${Math.floor(d/86400000)}d atrás`;
+}
+
+function emptyState(msg) {
+  return `<div style="text-align:center;padding:24px;color:var(--text-2);font-size:0.8125rem;">${msg}</div>`;
+}
+
+// ── V1.2: PURCHASES ──────────────────────────────────────
+function renderPurchases() {
+  const suppliers  = PurchasesModule.getAllSuppliers();
+  const purchases  = PurchasesModule.getAllPurchases().slice().reverse();
+  const totalInvested = PurchasesModule.getTotalInvested();
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Compras</h2>
+        <p>Reposição de estoque e fornecedores</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm" onclick="window._exportPurchases()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 11h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Exportar
+        </button>
+        <button class="btn btn-secondary" id="addSupplierBtn">+ Fornecedor</button>
+        <button class="btn btn-primary" id="addPurchaseBtn">+ Registrar Compra</button>
+      </div>
+    </div>
+
+    <div class="grid-4 section fade-up">
+      <div class="metric-card">
+        <div class="metric-icon blue"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 2h2.5l2 9H15l2-6H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="metric-label">Total Comprado</div>
+        <div class="metric-value text-accent">${fmt(totalInvested)}</div>
+        <div class="metric-delta">${purchases.length} compra${purchases.length !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon green"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M2 17c0-3.31 3.13-6 7-6s7 2.69 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="metric-label">Fornecedores</div>
+        <div class="metric-value">${suppliers.length}</div>
+        <div class="metric-delta">ativos</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon yellow"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1v16M13 5H7a3 3 0 000 6h4a3 3 0 010 6H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="metric-label">Ticket Médio Compra</div>
+        <div class="metric-value">${fmt(purchases.length > 0 ? totalInvested / purchases.length : 0)}</div>
+        <div class="metric-delta">por pedido</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon red"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l7 5v10H2V7L9 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+        <div class="metric-label">Fornecedor Top</div>
+        <div class="metric-value text-sm" style="font-size:1rem">${suppliers.sort((a,b)=>(b.totalSpent||0)-(a.totalSpent||0))[0]?.name || '—'}</div>
+        <div class="metric-delta">${fmt(suppliers.sort((a,b)=>(b.totalSpent||0)-(a.totalSpent||0))[0]?.totalSpent || 0)}</div>
+      </div>
+    </div>
+
+    <div class="grid-2 section fade-up fade-up-1">
+      <div class="card">
+        <div class="card-header"><h3>Fornecedores</h3></div>
+        ${suppliers.length === 0
+          ? `<div class="empty-state"><div class="empty-state-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M2 18c0-4.42 3.58-8 8-8s8 3.58 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><h3>Sem fornecedores</h3><p>Cadastre seu primeiro fornecedor.</p><button class="btn btn-primary btn-sm" onclick="document.getElementById('addSupplierBtn').click()">Cadastrar</button></div>`
+          : `<div class="table-wrap" style="border:none;margin:0 -20px">
+              <table>
+                <thead><tr><th>Fornecedor</th><th>Categoria</th><th>Compras</th><th>Total</th><th></th></tr></thead>
+                <tbody>
+                  ${suppliers.map(s => `<tr>
+                    <td><strong>${esc(s.name)}</strong><div class="text-xs text-muted">${esc(s.contact) || ''}</div></td>
+                    <td><span class="badge badge-gray">${esc(s.category)}</span></td>
+                    <td>${s.purchases}</td>
+                    <td><strong class="text-accent">${fmt(s.totalSpent || 0)}</strong></td>
+                    <td><div class="td-actions">
+                      <button class="btn btn-ghost btn-icon btn-sm" onclick="window._editSupplier('${s.id}')" title="Editar">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 2l2 2L4 11H2V9L9 2z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                      <button class="btn btn-danger btn-icon btn-sm" onclick="window._delSupplier('${s.id}')" title="Remover">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3h9M5 3V2h3v1M4 3v7h5V3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                    </div></td>
+                  </tr>`).join('')}
+                </tbody>
+              </table>
+             </div>`}
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Últimas compras</h3></div>
+        ${purchases.length === 0
+          ? `<div class="empty-state"><div class="empty-state-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 2h3l2 10h11l2-7H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Sem compras</h3><p>Registre a primeira compra de reposição.</p><button class="btn btn-primary btn-sm" onclick="document.getElementById('addPurchaseBtn').click()">Registrar</button></div>`
+          : `<div class="table-wrap" style="border:none;margin:0 -20px">
+              <table>
+                <thead><tr><th>Produto</th><th>Qtd</th><th>Custo/un</th><th>Total</th><th>Data</th></tr></thead>
+                <tbody>
+                  ${purchases.slice(0, 15).map(p => `<tr>
+                    <td><strong>${esc(p.productName)}</strong><div class="text-xs text-muted">${esc(p.supplierName)}</div></td>
+                    <td><span class="badge badge-blue">+${p.quantity}</span></td>
+                    <td class="td-muted">${fmt(p.unitCost)}</td>
+                    <td><strong class="text-red">${fmt(p.totalCost)}</strong></td>
+                    <td class="td-muted text-xs">${fmtDate(p.createdAt)}</td>
+                  </tr>`).join('')}
+                </tbody>
+              </table>
+             </div>`}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('addSupplierBtn').addEventListener('click', () => {
+    clearSupplierForm();
+    document.getElementById('supplierModalTitle').textContent = 'Novo Fornecedor';
+    openModal('modalSupplier');
+  });
+
+  document.getElementById('addPurchaseBtn').addEventListener('click', () => {
+    // Populate product select
+    const sel = document.getElementById('purchaseProduct');
+    sel.innerHTML = '<option value="">Selecione o produto…</option>';
+    ProductsModule.getAll().forEach(p => {
+      const o = document.createElement('option');
+      o.value = p.id; o.textContent = `${esc(p.name)} (${p.quantity} un.)`;
+      o.dataset.name = p.name;
+      sel.appendChild(o);
+    });
+    // Populate supplier select
+    const ssel = document.getElementById('purchaseSupplier');
+    ssel.innerHTML = '<option value="">Fornecedor avulso</option>';
+    PurchasesModule.getAllSuppliers().forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.id; o.dataset.name = s.name; o.textContent = s.name;
+      ssel.appendChild(o);
+    });
+    document.getElementById('purchaseQty').value = '';
+    document.getElementById('purchaseUnitCost').value = '';
+    document.getElementById('purchaseTotalCost').value = '';
+    openModal('modalPurchase');
+  });
+
+  window._editSupplier = id => {
+    const s = DataCore.getSupplierById(id);
+    if (!s) return;
+    document.getElementById('supplierId').value    = s.id;
+    document.getElementById('supplierName').value  = s.name;
+    document.getElementById('supplierContact').value = s.contact;
+    document.getElementById('supplierPhone').value = s.phone;
+    document.getElementById('supplierEmail').value = s.email;
+    document.getElementById('supplierCnpj').value  = s.cnpj;
+    document.getElementById('supplierCategory').value = s.category;
+    document.getElementById('supplierModalTitle').textContent = 'Editar Fornecedor';
+    openModal('modalSupplier');
+  };
+
+  window._delSupplier = id => {
+    const supplier = DataCore.getSupplierById(id);
+    if (!supplier) {
+      NotificationService.error('Fornecedor não encontrado.');
+      return;
+    }
+    showConfirm(
+      `Remover "${esc(supplier.name)}"?\n\nO histórico de compras vinculado será mantido, mas o fornecedor não estará disponível para novas compras.`,
+      () => {
+        PurchasesModule.deleteSupplier(id);
+        renderPurchases();
+      },
+      { title: 'Remover Fornecedor', confirmLabel: 'Remover', danger: true }
+    );
+  };
+
+  window._exportPurchases = () => {
+    ExportService.exportPurchases(PurchasesModule.getAllPurchases());
+  };
+
+  // Live updates
+  _sub(EventBus.EVENTS.PURCHASE_CREATED, () => renderPurchases());
+  _sub(EventBus.EVENTS.SUPPLIER_CREATED, () => renderPurchases());
+  _sub(EventBus.EVENTS.SUPPLIER_UPDATED, () => renderPurchases());
+  _sub(EventBus.EVENTS.SUPPLIER_DELETED, () => renderPurchases());
+}
+
+// ── V1.2: INSIGHTS ───────────────────────────────────────
+function renderInsights() {
+  const insights  = InsightsEngine.generate();
+  const typeIcons = {
+    success: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#22c55e" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    warning: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L14.5 13H1.5L8 2Z" stroke="#f59e0b" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 7v3M8 11.5v.5" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    danger:  `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#ef4444" stroke-width="1.5"/><path d="M8 5v4M8 10.5v.5" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    info:    `<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#3b82f6" stroke-width="1.5"/><path d="M8 7v4M8 5.5V5" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  };
+  const typeBorder = { success:'#22c55e', warning:'#f59e0b', danger:'#ef4444', info:'#3b82f6' };
+  const catColors  = { estoque:'badge-yellow', vendas:'badge-green', financeiro:'badge-blue', clientes:'badge-gray' };
+
+  const categories = ['todos','estoque','vendas','financeiro','clientes'];
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Insights</h2>
+        <p>${insights.length} análise${insights.length !== 1 ? 's' : ''} automática${insights.length !== 1 ? 's' : ''} gerada${insights.length !== 1 ? 's' : ''}</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary btn-sm" onclick="renderInsights()">↻ Atualizar</button>
+      </div>
+    </div>
+
+    <div class="tabs section" style="width:100%">
+      ${categories.map(c => `<button class="tab-btn${c==='todos'?' active':''}" data-cat="${c}">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`).join('')}
+    </div>
+
+    <div id="insightCards" class="section">
+      ${insights.length === 0
+        ? `<div class="empty-state"><div class="empty-state-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2a7 7 0 017 7c0 3-1.7 5.5-4.2 6.8V18H9.2v-2.2C6.7 14.5 5 12 5 9a7 7 0 017-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 21h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><h3>Sem insights</h3><p>Adicione mais dados (vendas, produtos) para gerar análises.</p></div>`
+        : `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px">
+            ${insights.map(ins => `
+              <div class="insight-card fade-up" data-category="${esc(ins.category)}" style="background:var(--surface);border:1px solid var(--border);border-left:3px solid ${typeBorder[ins.type]};border-radius:var(--radius);padding:16px;transition:border-color 200ms">
+                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+                  <span style="flex-shrink:0;margin-top:1px">${typeIcons[ins.type]}</span>
+                  <div style="flex:1">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                      <strong style="font-size:.875rem">${esc(ins.title)}</strong>
+                      <span class="badge ${catColors[ins.category]||'badge-gray'}">${esc(ins.category)}</span>
+                    </div>
+                    <p style="font-size:.8rem;color:var(--text-2);line-height:1.5">${esc(ins.body)}</p>
+                  </div>
+                </div>
+                ${ins.value !== null && ins.unit ? `
+                  <div style="display:flex;align-items:baseline;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+                    <span style="font-size:1.25rem;font-weight:700;color:${typeBorder[ins.type]}">${ins.unit === 'R$' ? fmt(ins.value) : (typeof ins.value === 'number' && !Number.isInteger(ins.value)) ? ins.value.toFixed(1) : esc(ins.value)}</span>
+                    ${ins.unit !== 'R$' ? `<span style="font-size:.75rem;color:var(--text-3)">${ins.unit}</span>` : ''}
+                  </div>` : ''}
+              </div>`).join('')}
+           </div>`}
+    </div>
+  `;
+
+  // Tab filter
+  document.querySelectorAll('.tab-btn[data-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn[data-cat]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.insight-card[data-category]').forEach(card => {
+        card.style.display = (cat === 'todos' || card.dataset.category === cat) ? '' : 'none';
+      });
+    });
+  });
+}
+
+// ── V1.3: AI ASSISTANT ───────────────────────────────────
+function renderAI() {
+  const history = [];
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <h2>Assistente IA</h2>
+        <p>Análises inteligentes do seu negócio • <span style="color:var(--accent);font-size:.75rem">Powered by ${AIService.getModelName()}</span></p>
+      </div>
+    </div>
+
+    <div class="section fade-up" style="max-width:700px;">
+      <!-- Quick prompts -->
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        ${[
+          'Qual produto mais vendeu?',
+          'Resumo financeiro',
+          'Alertas de estoque',
+          'Análise de clientes',
+          'Fluxo de caixa',
+          'Análise de vendas',
+        ].map(q => `<button class="btn btn-ghost btn-sm ai-quick" onclick="window._aiAsk('${q}')">${q}</button>`).join('')}
+      </div>
+
+      <!-- Chat window -->
+      <div id="aiChat" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);min-height:280px;max-height:440px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <div style="text-align:center;color:var(--text-3);font-size:.8125rem;padding:24px 0;">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin-bottom:8px;display:block;margin-inline:auto"><circle cx="14" cy="14" r="12" stroke="var(--accent)" stroke-width="1.5" opacity=".5"/><path d="M9 14c0-2.76 2.24-5 5-5s5 2.24 5 5-2.24 5-5 5" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/><circle cx="14" cy="14" r="2" fill="var(--accent)"/></svg>
+          Olá! Sou o assistente do BusinessOS.<br>Pergunte sobre estoque, vendas, clientes ou finanças.
+          <div style="margin-top:8px;font-size:.75rem;opacity:.6;">
+            <!-- API SLOT: AI PROVIDER | FUTURE: Claude / Gemini / OpenAI -->
+            Modo atual: análise local dos dados internos
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <input type="text" id="aiInput" class="input" placeholder="Pergunte sobre seu negócio…" style="flex:1;" />
+        <button class="btn btn-primary" id="aiSendBtn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 7L1 1l3 6-3 6 12-6z" fill="currentColor"/></svg>
+          Enviar
+        </button>
+      </div>
+    </div>
+  `;
+
+  const chat  = document.getElementById('aiChat');
+  const input = document.getElementById('aiInput');
+
+  function appendMsg(role, text) {
+    const div = document.createElement('div');
+    div.style.cssText = role === 'user'
+      ? 'align-self:flex-end;background:var(--accent);color:#fff;padding:10px 14px;border-radius:14px 14px 4px 14px;max-width:85%;font-size:.8125rem;line-height:1.5;'
+      : 'align-self:flex-start;background:var(--bg);border:1px solid var(--border);padding:10px 14px;border-radius:14px 14px 14px 4px;max-width:90%;font-size:.8125rem;line-height:1.6;';
+    // Render **bold** markdown-style
+    div.innerHTML = esc(text).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    // Clear welcome if first message
+    if (chat.children.length === 1 && chat.children[0].style.textAlign === 'center') {
+      chat.innerHTML = '';
+    }
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+    return div;
+  }
+
+  async function send(query) {
+    if (!query.trim()) return;
+    appendMsg('user', query);
+    input.value = '';
+    input.disabled = true;
+    document.getElementById('aiSendBtn').disabled = true;
+
+    const thinking = appendMsg('ai', '');
+    const dots = document.createElement('span');
+    dots.className = 'dot-anim';
+    dots.innerHTML = '<span style="animation:blink 1s infinite 0s">●</span><span style="animation:blink 1s infinite .2s">●</span><span style="animation:blink 1s infinite .4s">●</span>';
+    thinking.appendChild(dots);
+
+    let raw = '';
+    function _clearDots() {
+      const d = thinking.querySelector('.dot-anim');
+      if (d) d.remove();
+    }
+
+    try {
+      const response = await AIService.analyze(query, (chunk) => {
+        _clearDots();
+        raw += chunk;
+        thinking.textContent = raw;
+        chat.scrollTop = chat.scrollHeight;
+      });
+
+      _clearDots();
+      if (raw) {
+        thinking.innerHTML = esc(raw).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+      }
+      
+      if (response.source && response.source !== 'error') {
+        const badge = document.createElement('div');
+        badge.style.cssText = 'font-size:.7rem;color:var(--text-3);margin-top:6px;';
+        badge.textContent = `Fonte: ${response.source}`;
+        thinking.appendChild(badge);
+      } else if (response.source === 'error') {
+        thinking.innerHTML = esc(response.text);
+      }
+    } catch (err) {
+      thinking.textContent = 'Erro ao processar consulta. Tente novamente.';
+    }
+
+    input.disabled = false;
+    document.getElementById('aiSendBtn').disabled = false;
+    input.focus();
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  window._aiAsk = q => { input.value = q; send(q); };
+
+  document.getElementById('aiSendBtn').addEventListener('click', () => send(input.value));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') send(input.value); });
+}
+
+// ── Boot ─────────────────────────────────────────────────
+buildSidebar();
+navigateTo('dashboard');
+
+// Global dashboard refresh — re-subscribed at boot and after each navigateTo clears
+// Using a permanent handler outside _unsubs so it survives module navigation
+EventBus.subscribe(EVENTS.DASHBOARD_REFRESH, () => {
+  if (activeModule === 'dashboard') renderDashboard();
+  buildSidebar();
+});
+</script>
+</body>
+</html>

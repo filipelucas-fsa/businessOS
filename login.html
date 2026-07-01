@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BusinessOS v1.3 — Login</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card fade-up">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">B</div>
+      <span class="auth-logo-name">BusinessOS</span>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginView">
+      <h1 class="auth-headline">Bem-vindo de volta</h1>
+      <p class="auth-sub">Entre com sua conta para continuar.</p>
+
+      <div id="loginError" class="badge badge-red" style="display:none;width:100%;border-radius:6px;padding:10px 12px;margin-bottom:16px;font-size:0.8125rem;"></div>
+
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="loginEmail" class="input" placeholder="seu@email.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="loginPassword" class="input" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;" id="loginBtn">
+        Entrar
+      </button>
+
+      <div class="auth-divider">ou</div>
+
+      <p class="auth-footer">
+        Não tem conta? <a href="#" id="goRegister">Criar conta grátis</a>
+      </p>
+
+      <div class="demo-info">
+        <p style="font-size:0.75rem;color:var(--text-2);margin-bottom:6px;font-weight:500;">Demo rápido:</p>
+        <p style="font-size:0.75rem;color:var(--text-3);">Email: <code style="color:var(--accent)">demo@businessos.app</code></p>
+        <p style="font-size:0.75rem;color:var(--text-3);">Senha: <code style="color:var(--accent)">demo1234</code></p>
+        <button class="btn btn-ghost btn-sm" id="fillDemo" style="margin-top:8px;">Preencher automaticamente</button>
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerView" style="display:none;">
+      <h1 class="auth-headline">Criar conta</h1>
+      <p class="auth-sub">Configure seu BusinessOS em segundos.</p>
+
+      <div id="registerError" class="badge badge-red" style="display:none;width:100%;border-radius:6px;padding:10px 12px;margin-bottom:16px;font-size:0.8125rem;"></div>
+
+      <div class="form-group">
+        <label>Nome</label>
+        <input type="text" id="regName" class="input" placeholder="Seu nome"/>
+      </div>
+      <div class="form-group">
+        <label>Empresa <span style="font-size:.75rem;color:var(--text-3);">(cria um tenant isolado)</span></label>
+        <input type="text" id="regCompany" class="input" placeholder="Nome da empresa"/>
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="regEmail" class="input" placeholder="seu@email.com"/>
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="regPassword" class="input" placeholder="Mínimo 6 caracteres"/>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;" id="registerBtn">
+        Criar conta
+      </button>
+
+      <div class="auth-divider">ou</div>
+
+      <p class="auth-footer">
+        Já tem conta? <a href="#" id="goLogin">Entrar</a>
+      </p>
+
+      <!-- API SLOT: AUTH | FUTURE: OAuth / SSO -->
+      <p style="font-size:.7rem;color:var(--text-3);text-align:center;margin-top:12px;">
+        Cada empresa cria um tenant isolado com dados independentes.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import StorageService from './js/core/storage.js';
+  import AuthService from './js/services/auth.js';
+  import NotificationService from './js/core/notifications.js';
+
+  // Apply theme from settings
+  const settings = StorageService.getSettings();
+  if (settings?.theme) {
+    document.documentElement.setAttribute('data-theme', settings.theme);
+  }
+
+  // Redirect if already logged in
+  // Removed immediate redirect to prevent race condition with demo seeding
+  // If the user manually goes to dashboard.html, AuthService.requireAuth() will handle it.
+  // If we want auto-login, we should do it AFTER seeding is definitely finished.
+
+  // Seed demo user on first load
+  if (!StorageService.findUserByEmail('demo@businessos.app')) {
+    (async () => {
+      try {
+        await AuthService.register({
+          name:     'Demo User',
+          email:    'demo@businessos.app',
+          password: 'demo1234',
+          company:  'BusinessOS Demo',
+        });
+        await AuthService.login('demo@businessos.app', 'demo1234');
+        StorageService.seedDemoData();
+      } catch (err) {
+        console.error('[Demo] seeding error:', err);
+      } finally {
+        StorageService.clearSession();
+      }
+    })();
+  }
+
+  // Toggle views
+  document.getElementById('goRegister').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('registerView').style.display = 'block';
+  });
+  document.getElementById('goLogin').addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('registerView').style.display = 'none';
+    document.getElementById('loginView').style.display = 'block';
+  });
+
+  // Fill demo
+  document.getElementById('fillDemo').addEventListener('click', () => {
+    document.getElementById('loginEmail').value = 'demo@businessos.app';
+    document.getElementById('loginPassword').value = 'demo1234';
+  });
+
+  // Login
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const err      = document.getElementById('loginError');
+    if (!email || !password) { err.textContent = 'Preencha todos os campos.'; err.style.display = 'flex'; return; }
+
+    const btn = document.getElementById('loginBtn');
+    btn.textContent = 'Entrando…'; btn.disabled = true;
+
+    const result = await AuthService.login(email, password);
+    if (result.ok) {
+      window.location.href = 'dashboard.html';
+    } else {
+      err.textContent = result.error; err.style.display = 'flex';
+      btn.textContent = 'Entrar'; btn.disabled = false;
+    }
+  });
+
+  // Register
+  document.getElementById('registerBtn').addEventListener('click', async () => {
+    const name     = document.getElementById('regName').value.trim();
+    const company  = document.getElementById('regCompany').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const err      = document.getElementById('registerError');
+
+    if (!name || !email || !password) { err.textContent = 'Preencha todos os campos.'; err.style.display = 'flex'; return; }
+    if (password.length < 6)           { err.textContent = 'Senha deve ter mínimo 6 caracteres.'; err.style.display = 'flex'; return; }
+
+    const btn = document.getElementById('registerBtn');
+    btn.textContent = 'Criando conta…'; btn.disabled = true;
+
+    const result = await AuthService.register({ name, email, password, company });
+    if (result.ok) {
+      // Login immediately after register — seeds demo data in the new tenant
+      await AuthService.login(email, password);
+      StorageService.seedDemoData();
+      window.location.href = 'dashboard.html';
+    } else {
+      err.textContent = result.error; err.style.display = 'flex';
+      btn.textContent = 'Criar conta'; btn.disabled = false;
+    }
+  });
+
+  // Enter key
+  ['loginEmail', 'loginPassword'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('loginBtn').click();
+    });
+  });
+</script>
+</body>
+</html>
