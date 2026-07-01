@@ -13,3 +13,7 @@ Thumbs.db
 
 # Build outputs
 # Add any build output directories here if needed
+
+# Python bytecode (from local server.py runs)
+__pycache__/
+*.pyc

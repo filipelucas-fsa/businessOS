@@ -22,6 +22,31 @@ PORT = int(os.environ.get('PORT', 8080))
 NVIDIA_BASE = 'https://integrate.api.nvidia.com'
 
 
+def _load_env_local(path='.env.local'):
+    """
+    Minimal .env.local loader (no external dependencies).
+    Populates os.environ so NVIDIA_API_KEY is available to the proxy,
+    mirroring how Vercel injects environment variables in production.
+    Does not overwrite variables already set in the real environment.
+    """
+    if not os.path.isfile(path):
+        return
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            key, _, value = line.partition('=')
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
+
+
+_load_env_local()
+NVIDIA_API_KEY = os.environ.get('NVIDIA_API_KEY', '')
+
+
 class ProxyHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_OPTIONS(self):
@@ -56,15 +81,27 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
         nvidia_path = self.path[len('/api/nvidia'):]
         target = f'{NVIDIA_BASE}{nvidia_path}'
 
+        # The API key is injected here, server-side, from NVIDIA_API_KEY
+        # (loaded from .env.local). The browser never sends it — mirrors
+        # the security model of api/nvidia/[...path].js on Vercel.
+        if not NVIDIA_API_KEY:
+            self._log('ERROR: NVIDIA_API_KEY not set. Create a .env.local with NVIDIA_API_KEY=nvapi-...')
+            self.send_response(500)
+            self._cors_headers()
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'error': 'NVIDIA_API_KEY not configured. Set it in .env.local for local dev.'
+            }).encode())
+            return
+
         headers = {
             'Content-Type': self.headers.get('Content-Type', 'application/json'),
+            'Authorization': f'Bearer {NVIDIA_API_KEY}',
         }
-        auth = self.headers.get('Authorization')
-        if auth:
-            headers['Authorization'] = auth
 
         self._log(f'POST {target}')
-        self._log(f'Authorization: {"Bearer ***" if auth else "none"}')
+        self._log('Authorization: Bearer *** (from .env.local)')
         self._log(f'Content-Length: {len(body)}')
 
         try:

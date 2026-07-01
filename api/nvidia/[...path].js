@@ -16,6 +16,13 @@
 
 const NVIDIA_BASE = 'https://integrate.api.nvidia.com';
 
+// Default Vercel serverless timeout (10s on Hobby) is too short for LLM
+// completions, especially non-streaming ones. Extend it explicitly.
+// (60s is the Hobby-plan ceiling; Pro/Enterprise plans can go higher if needed.)
+export const config = {
+  maxDuration: 60,
+};
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
